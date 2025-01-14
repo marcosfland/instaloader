@@ -1,2 +1,27 @@
+# Arquivos de cache do Python
+*.py[cod]
 __pycache__/
 .mypy_cache/
+# Arquivos de sessão do Instaloader
+session*
+
+# Ambientes virtuais do Python
+venv/
+.env/
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+
+# Configurações do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Dependências do Python (caso use pip freeze para requirements.txt)
+*.egg-info/
+*.dist-info/
+
+# Arquivos gerados por IDEs (ex: PyCharm, VS Code)
+.vscode/
+.idea/
+*.iml
