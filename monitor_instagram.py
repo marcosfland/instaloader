@@ -1,7 +1,6 @@
 import instaloader
 import time
 
-# Configurações iniciais
 PROFILES_TO_MONITOR = ["cube_lightsum", "wooah_nv", "twicetagram"]  # Substitua pelos nomes dos perfis que deseja monitorar
 CHECK_INTERVAL = 300  # Tempo em segundos entre cada verificação (5 minutos)
 SESSION_FILE = "session"  # Nome do arquivo para manter a sessão ativa
