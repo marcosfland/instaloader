@@ -1,7 +1,8 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox
 from tkinter import ttk
 from instaloader import Instaloader, Profile
+import os
 
 def download_photos():
     usernames = entry_usernames.get().split(',')
@@ -9,10 +10,9 @@ def download_photos():
         messagebox.showerror("Erro", "Por favor, insira pelo menos um nome de usuário.")
         return
 
-    download_path = filedialog.askdirectory()
-    if not download_path:
-        messagebox.showerror("Erro", "Por favor, selecione uma pasta de destino.")
-        return
+    # Definindo o diretório padrão para download
+    download_path = os.path.join(os.path.expanduser("~"), "Downloads", "Instaloader")
+    os.makedirs(download_path, exist_ok=True)
 
     username = entry_login.get()
     password = entry_password.get()
@@ -21,12 +21,20 @@ def download_photos():
         return
 
     loader = Instaloader()
-    loader.login(username, password)
+    try:
+        loader.login(username, password)
+    except Exception as e:
+        messagebox.showerror("Erro", f"Erro ao fazer login: {e}")
+        return
 
     total_posts = 0
     for username in usernames:
-        profile = Profile.from_username(loader.context, username.strip())
-        total_posts += profile.mediacount
+        try:
+            profile = Profile.from_username(loader.context, username.strip())
+            total_posts += profile.mediacount
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao obter perfil {username}: {e}")
+            return
 
     progress_bar['maximum'] = total_posts
     progress_bar['value'] = 0
@@ -35,14 +43,17 @@ def download_photos():
         try:
             profile = Profile.from_username(loader.context, username.strip())
             for post in profile.get_posts():
-                if var_photos.get() and post.typename == 'GraphImage':
-                    loader.download_post(post, target=f"{download_path}/{profile.username}")
-                if var_videos.get() and post.typename == 'GraphVideo':
-                    loader.download_post(post, target=f"{download_path}/{profile.username}")
-                if var_reels.get() and post.typename == 'GraphSidecar':
-                    loader.download_post(post, target=f"{download_path}/{profile.username}")
-                progress_bar['value'] += 1
-                root.update_idletasks()
+                try:
+                    if var_photos.get() and post.typename == 'GraphImage':
+                        loader.download_post(post, target=f"{download_path}/{profile.username}")
+                    if var_videos.get() and post.typename == 'GraphVideo':
+                        loader.download_post(post, target=f"{download_path}/{profile.username}")
+                    if var_reels.get() and post.typename == 'GraphSidecar':
+                        loader.download_post(post, target=f"{download_path}/{profile.username}")
+                    progress_bar['value'] += 1
+                    root.update_idletasks()
+                except Exception as e:
+                    messagebox.showerror("Erro", f"Erro ao baixar post: {e}")
             messagebox.showinfo("Sucesso", f"Mídias de {username} baixadas com sucesso!")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao baixar mídias de {username}: {e}")
